@@ -26,7 +26,7 @@ export default function WritePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Jodit editor config - MOVED BEFORE THE CONDITIONAL RETURN
+  // Jodit editor config 
   const config = useMemo(
     () => ({
       readonly: false,
