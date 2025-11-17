@@ -1,4 +1,4 @@
-// app/(main)/post/[slug]/page.tsx
+
 
 // 'use client' tells Next.js this component runs in the browser (needs hooks like useState)
 'use client';
@@ -28,8 +28,13 @@ import { ArrowLeft, Calendar, Clock, Eye, Heart, MessageSquare, User } from 'luc
 
 // Import date formatting library
 import { format } from 'date-fns';
+
+// Import comment components
 import CommentForm from '@/components/comment/commentForm';
 import CommentList from '@/components/comment/CommentList';
+
+// Import like button component
+import LikeButton from '@/components/post/LikeButton';
 
 // This is the main component for viewing a single post
 export default function SinglePostPage() {

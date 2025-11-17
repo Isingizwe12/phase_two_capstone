@@ -1,8 +1,10 @@
+// components/post/PostCard.tsx
 import Link from 'next/link';
 import { Post } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Clock, Eye, MessageSquare, Heart } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import LikeButton from './LikeButton';
 
 interface PostCardProps {
   post: Post;
@@ -21,8 +23,8 @@ export default function PostCard({ post }: PostCardProps) {
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      {/* Cover Image - Clickable */}
       <Link href={`/post/${post.slug}`}>
-        {/* Cover Image */}
         {post.coverImage && (
           <div className="aspect-video overflow-hidden">
             <img
@@ -32,7 +34,10 @@ export default function PostCard({ post }: PostCardProps) {
             />
           </div>
         )}
+      </Link>
 
+      {/* Content - Clickable */}
+      <Link href={`/post/${post.slug}`}>
         <CardHeader>
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
@@ -83,6 +88,11 @@ export default function PostCard({ post }: PostCardProps) {
           Published {publishedDate}
         </CardFooter>
       </Link>
+
+      {/* Like Button - NOT inside Link, with proper event stopping */}
+      <div className="px-6 pb-4">
+        <LikeButton postId={post.id} initialLikeCount={post.likesCount || 0} />
+      </div>
     </Card>
   );
 }
