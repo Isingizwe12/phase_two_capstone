@@ -28,6 +28,8 @@ import { ArrowLeft, Calendar, Clock, Eye, Heart, MessageSquare, User } from 'luc
 
 // Import date formatting library
 import { format } from 'date-fns';
+import CommentForm from '@/components/comment/commentForm';
+import CommentList from '@/components/comment/CommentList';
 
 // This is the main component for viewing a single post
 export default function SinglePostPage() {
@@ -227,12 +229,30 @@ export default function SinglePostPage() {
           </div>
         </article>
 
-        {/* Comments Section (placeholder for now) */}
+        {/* Comments Section */}
         <div className="mt-8">
           <Card>
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-bold mb-4">Comments</h2>
-              <p className="text-gray-600">Comments feature coming soon!</p>
+              <h2 className="text-2xl font-bold mb-6">
+                Comments ({post.commentsCount || 0})
+              </h2>
+              
+              {/* Comment Form */}
+              <CommentForm 
+                postId={post.id} 
+                onCommentAdded={() => {
+                  // This will trigger re-render when comment is added
+                  window.location.reload();
+                }} 
+              />
+              
+              {/* Comments List */}
+              <div className="mt-8">
+                <CommentList 
+                  postId={post.id} 
+                  onCommentAdded={() => {}} 
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
