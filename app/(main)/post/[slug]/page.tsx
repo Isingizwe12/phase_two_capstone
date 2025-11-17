@@ -1,10 +1,10 @@
-
+// app/(main)/post/[slug]/page.tsx
 
 // 'use client' tells Next.js this component runs in the browser (needs hooks like useState)
 'use client';
 
 // Import React hooks
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // Import Next.js components for navigation and links
 import { useParams, useRouter } from 'next/navigation';
@@ -16,12 +16,14 @@ import { usePostBySlug } from '@/lib/hooks/usePosts';
 // Import auth hook to check if user is logged in
 import { useAuth } from '@/lib/context/AuthContext';
 
-// Import service function to track page views
+// Import service functions
 import { incrementViewCount } from '@/lib/services/postService';
+import { getUserById } from '@/lib/services/userService';
 
 // Import UI components from shadcn
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Avatar } from '@/components/ui/avatar';
 
 // Import icons from lucide-react
 import { ArrowLeft, Calendar, Clock, Eye, Heart, MessageSquare, User } from 'lucide-react';
@@ -38,33 +40,33 @@ import LikeButton from '@/components/post/LikeButton';
 
 // This is the main component for viewing a single post
 export default function SinglePostPage() {
-  // useParams gets the dynamic part of the URL
-  // For URL: /post/my-first-post-123456
-  // params.slug = "my-first-post-123456"
   const params = useParams();
   const slug = params.slug as string;
-
-  // useRouter allows us to navigate programmatically
   const router = useRouter();
-
-  // Get current logged-in user (or null if not logged in)
   const { user } = useAuth();
 
   // Fetch the post from Firestore using React Query
-  // - data: the post object from database
-  // - isLoading: true while fetching, false when done
-  // - error: contains error message if fetch fails
   const { data: post, isLoading, error } = usePostBySlug(slug);
 
-  // useEffect runs side effects after component renders
-  // This tracks the page view count
+  // Fetch author data
+  const [author, setAuthor] = useState<any>(null);
+
   useEffect(() => {
-    // Only increment if we have a valid post
+    const fetchAuthor = async () => {
+      if (post?.authorId) {
+        const authorData = await getUserById(post.authorId);
+        setAuthor(authorData);
+        console.log('Author loaded:', authorData);
+      }
+    };
+    fetchAuthor();
+  }, [post?.authorId]);
+
+  // Track page view
+  useEffect(() => {
     if (post?.id) {
-      // Increment view count in Firestore
       incrementViewCount(post.id);
     }
-    // Dependencies: only run when post.id changes
   }, [post?.id]);
 
   // Show loading spinner while fetching post
@@ -116,7 +118,6 @@ export default function SinglePostPage() {
   }
 
   // Format the published date
-  // If publishedAt is a Firestore Timestamp, convert to Date
   const publishedDate = post.publishedAt
     ? format(
         post.publishedAt instanceof Date ? post.publishedAt : post.publishedAt.toDate(),
@@ -164,7 +165,26 @@ export default function SinglePostPage() {
               />
             </div>
           )}
-
+         {/* Author Section - PROMINENT */}
+            {author && (
+              <div className="flex items-center gap-3 py-4 mb-6 border-y">
+                <Link href={`/profile/${author.username}`} className="flex items-center gap-3 hover:opacity-80">
+                  <Avatar className="w-12 h-12">
+                    {author.photoURL ? (
+                      <img src={author.photoURL} alt={author.displayName} />
+                    ) : (
+                      <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white text-xl font-semibold">
+                        {author.displayName?.[0]?.toUpperCase() || 'A'}
+                      </div>
+                    )}
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold text-gray-900">{author.displayName}</p>
+                    <p className="text-sm text-gray-600">@{author.username}</p>
+                  </div>
+                </Link>
+              </div>
+            )}
           {/* Post Content */}
           <div className="p-8">
             {/* Tags */}
@@ -190,8 +210,10 @@ export default function SinglePostPage() {
               <p className="text-xl text-gray-600 mb-6">{post.excerpt}</p>
             )}
 
+           
+
             {/* Meta Information */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 pb-6 border-b">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 pb-6 mb-6 border-b">
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
                 <span>{publishedDate}</span>
@@ -216,10 +238,7 @@ export default function SinglePostPage() {
 
             {/* Post Content (HTML from rich text editor) */}
             <div
-              className="prose prose-lg max-w-none mt-8"
-              // dangerouslySetInnerHTML renders HTML from database
-              // "dangerous" because it could contain malicious scripts
-              // Safe here because content is from our own editor
+              className="prose prose-lg max-w-none"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
@@ -231,6 +250,13 @@ export default function SinglePostPage() {
                 </Link>
               </div>
             )}
+
+            {/* Like Button Section */}
+            <div className="mt-8 pt-6 border-t">
+              <div className="flex items-center justify-center">
+                <LikeButton postId={post.id} initialLikeCount={post.likesCount || 0} />
+              </div>
+            </div>
           </div>
         </article>
 
@@ -246,7 +272,6 @@ export default function SinglePostPage() {
               <CommentForm 
                 postId={post.id} 
                 onCommentAdded={() => {
-                  // This will trigger re-render when comment is added
                   window.location.reload();
                 }} 
               />
