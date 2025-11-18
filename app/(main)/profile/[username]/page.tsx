@@ -1,35 +1,41 @@
-'use client';
+"use client";
 
 // React hooks
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 // Next.js hooks
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Our service functions
-import { getUserByUsername } from '@/lib/services/userService';
-import { getPostsByAuthor } from '@/lib/services/postService';
+import { getUserByUsername } from "@/lib/services/userService";
+import { getPostsByAuthor } from "@/lib/services/postService";
 
 // Auth context
-import { useAuth } from '@/lib/context/AuthContext';
+import { useAuth } from "@/lib/context/AuthContext";
 
 // TypeScript types
-import { User, Post } from '@/types';
+import { User, Post } from "@/types";
 
 // UI components
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar } from '@/components/ui/avatar';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
 
 // Post card component
-import PostCard from '@/components/post/PostCard';
+import PostCard from "@/components/post/PostCard";
 
 // Icons
-import { ArrowLeft, MapPin, Link as LinkIcon, Calendar, Loader2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  MapPin,
+  Link as LinkIcon,
+  Calendar,
+  Loader2,
+} from "lucide-react";
 
 // Date formatting
-import { format } from 'date-fns';
+import { format } from "date-fns";
 
 /**
  * Profile Page Component
@@ -45,9 +51,9 @@ export default function ProfilePage() {
 
   // Component state
   const [profileUser, setProfileUser] = useState<User | null>(null); // Profile being viewed
-  const [posts, setPosts] = useState<Post[]>([]);                     // User's posts
-  const [loading, setLoading] = useState(true);                       // Loading state
-  const [error, setError] = useState('');                             // Error message
+  const [posts, setPosts] = useState<Post[]>([]); // User's posts
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(""); // Error message
 
   /**
    * Fetch user profile and their posts
@@ -57,28 +63,28 @@ export default function ProfilePage() {
     const fetchProfileData = async () => {
       try {
         setLoading(true);
-        setError('');
+        setError("");
 
         // Fetch user by username
-        console.log('Fetching user:', username);
+        console.log("Fetching user:", username);
         const user = await getUserByUsername(username);
 
         if (!user) {
-          setError('User not found');
+          setError("User not found");
           return;
         }
 
         setProfileUser(user);
 
         // Fetch user's published posts (not drafts)
-        console.log('Fetching posts for user:', user.uid);
+        console.log("Fetching posts for user:", user.uid);
         const userPosts = await getPostsByAuthor(user.uid, false); // false = only published
         setPosts(userPosts);
 
-        console.log('Profile loaded:', { user, postsCount: userPosts.length });
+        console.log("Profile loaded:", { user, postsCount: userPosts.length });
       } catch (err: any) {
-        console.error('Error loading profile:', err);
-        setError('Failed to load profile');
+        console.error("Error loading profile:", err);
+        setError("Failed to load profile");
       } finally {
         setLoading(false);
       }
@@ -108,7 +114,7 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center">
-            <p className="text-gray-600 mb-4">{error || 'User not found'}</p>
+            <p className="text-gray-600 mb-4">{error || "User not found"}</p>
             <Link href="/">
               <Button>Back to Home</Button>
             </Link>
@@ -124,9 +130,9 @@ export default function ProfilePage() {
         profileUser.createdAt instanceof Date
           ? profileUser.createdAt
           : profileUser.createdAt.toDate(),
-        'MMMM yyyy'
+        "MMMM yyyy"
       )
-    : 'Recently';
+    : "Recently";
 
   // Render profile page
   return (
@@ -135,7 +141,10 @@ export default function ProfilePage() {
       <nav className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+            >
               <ArrowLeft className="w-5 h-5" />
               <span>Back to Home</span>
             </Link>
@@ -153,14 +162,16 @@ export default function ProfilePage() {
                 <img src={profileUser.photoURL} alt={profileUser.displayName} />
               ) : (
                 <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white text-3xl font-semibold">
-                  {profileUser.displayName?.[0]?.toUpperCase() || 'U'}
+                  {profileUser.displayName?.[0]?.toUpperCase() || "U"}
                 </div>
               )}
             </Avatar>
 
             {/* User Info */}
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900">{profileUser.displayName}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {profileUser.displayName}
+              </h1>
               <p className="text-gray-600 mt-1">@{profileUser.username}</p>
 
               {/* Bio */}
@@ -192,15 +203,21 @@ export default function ProfilePage() {
               {/* Stats */}
               <div className="flex items-center gap-6 mt-4">
                 <div>
-                  <span className="font-bold text-gray-900">{profileUser.followersCount || 0}</span>
+                  <span className="font-bold text-gray-900">
+                    {profileUser.followersCount || 0}
+                  </span>
                   <span className="text-gray-600 ml-1">Followers</span>
                 </div>
                 <div>
-                  <span className="font-bold text-gray-900">{profileUser.followingCount || 0}</span>
+                  <span className="font-bold text-gray-900">
+                    {profileUser.followingCount || 0}
+                  </span>
                   <span className="text-gray-600 ml-1">Following</span>
                 </div>
                 <div>
-                  <span className="font-bold text-gray-900">{posts.length}</span>
+                  <span className="font-bold text-gray-900">
+                    {posts.length}
+                  </span>
                   <span className="text-gray-600 ml-1">Posts</span>
                 </div>
               </div>
@@ -208,7 +225,7 @@ export default function ProfilePage() {
               {/* Action Buttons */}
               <div className="mt-6">
                 {isOwnProfile ? (
-                  <Link href="/dashboard">
+                  <Link href="/profile/edit">
                     <Button>Edit Profile</Button>
                   </Link>
                 ) : (
