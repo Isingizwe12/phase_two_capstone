@@ -68,27 +68,50 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden py-20 sm:py-28 bg-gradient-to-r from-blue-700 to-blue-500 text-white">
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-md">
-            Welcome to Publishing Platform
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl text-blue-100 mb-6 sm:mb-8">
-            Discover stories, thinking, and expertise from writers on any topic.
-          </p>
-          {!user && (
+      {/* Hero Section – Ultra Clean Card Style */}
+<div className="relative min-h-screen flex items-center justify-center bg-gray-50 px-4 overflow-hidden">
+  {/* Subtle background grid */}
+  <div className="absolute inset-0 bg-grid-gray-200/30 [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black_60%,transparent)]" />
+
+  <div className="relative max-w-4xl w-full">
+    <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 overflow-hidden">
+      <div className="px-8 py-20 sm:px-12 sm:py-24 md:px-16 md:py-28 text-center">
+        {/* Title */}
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-gray-900">
+          Welcome to
+          <span className="block mt-3 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-700">
+            Publishing Platform
+          </span>
+        </h1>
+
+        {/* Clean subtitle – no dots, no commas, just flow */}
+        <p className="mt-8 text-xl sm:text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-light">
+          Discover remarkable stories<br />
+          bold ideas<br />
+          and expert insights from writers worldwide
+        </p>
+
+        {/* CTA – only shows when not logged in */}
+        {!user && (
+          <div className="mt-12">
             <Link href="/signup">
-              <Button 
-                size="lg" 
-                className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg bg-white text-blue-700 hover:bg-gray-100"
+              <Button
+                size="lg"
+                className="px-10 py-7 text-xl font-semibold rounded-2xl bg-gray-900 text-white hover:bg-black 
+                           shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
               >
-                Start Writing
+                Start Writing — It’s Free
               </Button>
             </Link>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+    </div>
+
+    {/* Soft glow at bottom */}
+    <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-gray-900/5 rounded-full blur-3xl -z-10" />
+  </div>
+</div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">

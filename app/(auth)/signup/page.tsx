@@ -81,7 +81,7 @@ export default function SignupPage() {
                 id="displayName"
                 name="displayName"
                 type="text"
-                placeholder="John Doe"
+                placeholder="Aline Isingizwe"
                 value={formData.displayName}
                 onChange={handleChange}
                 required
@@ -95,7 +95,7 @@ export default function SignupPage() {
                 id="username"
                 name="username"
                 type="text"
-                placeholder="johndoe"
+                placeholder="alineisingizwe"
                 value={formData.username}
                 onChange={handleChange}
                 required
@@ -109,7 +109,7 @@ export default function SignupPage() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="isingizwe@example.com"
                 value={formData.email}
                 onChange={handleChange}
                 required
