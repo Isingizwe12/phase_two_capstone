@@ -65,14 +65,15 @@ export default function CommentList({
           const authorData = await getUserData(comment.authorId);
 
           return {
-            ...comment,
-            authorName:
-              (authorData as User | null | undefined)?.displayName ||
-              "Anonymous",
-            authorPhoto:
-              (authorData as User | null | undefined)?.photoURL ||
-              "/default-avatar.png",
-          };
+      ...comment,
+      authorName:
+        (authorData as User | null | undefined)?.displayName || "Anonymous",
+      authorPhoto:
+        (authorData as User | null | undefined)?.photoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          (authorData as User | null | undefined)?.displayName || "Anonymous"
+        )}&background=3b82f6&color=fff&size=128&bold=true`,
+    };
         })
       );
 
