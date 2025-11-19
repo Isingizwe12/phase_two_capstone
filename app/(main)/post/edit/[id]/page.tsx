@@ -58,52 +58,29 @@ export default function EditPostPage() {
 
   // Jodit editor configuration
   // useMemo prevents recreating config on every render
-  const config = useMemo(
-    () => ({
-      readonly: false,
-      placeholder: 'Start writing your story...',
-      minHeight: 400,
-      toolbar: true,
-      spellcheck: true,
-      language: 'en',
-      toolbarButtonSize: 'medium',
-      toolbarAdaptive: false,
-      showCharsCounter: true,
-      showWordsCounter: true,
-      showXPathInStatusbar: false,
-      buttons: [
-        'bold',
-        'italic',
-        'underline',
-        '|',
-        'ul',
-        'ol',
-        '|',
-        'font',
-        'fontsize',
-        '|',
-        'paragraph',
-        '|',
-        'image',
-        'link',
-        '|',
-        'align',
-        '|',
-        'undo',
-        'redo',
-        '|',
-        'hr',
-        'table',
-        'source',
-      ],
-      uploader: {
-        insertImageAsBase64URI: true,
-      },
-      removeButtons: ['brush', 'file'],
-      disablePlugins: 'paste',
-    }),
-    []
-  );
+ const config = useMemo(
+  () => ({
+    readonly: false,
+    placeholder: 'Start writing your story...',
+    height: 500,
+    toolbar: true,
+    spellcheck: true,
+    language: 'en',
+    toolbarButtonSize: 'middle' as const, // ← explicit "as const" helps TS
+    toolbarAdaptive: false,
+    showCharsCounter: true,
+    showWordsCounter: true,
+    showXPathInStatusbar: false,
+    buttons: 'bold,italic,underline,|,ul,ol,|,font,fontsize,paragraph,|,image,link,|,align,undo,redo,|,hr,table,source',
+    removeButtons: ['brush', 'file'],
+    disablePlugins: ['paste'],
+    uploader: {
+      insertImageAsBase64URI: true,
+    },
+    // These are the only options that still exist and are type-safe in Jodit 4+
+  }),
+  []
+);
 
   // When post loads, fill the form with existing data
   useEffect(() => {
@@ -220,7 +197,7 @@ export default function EditPostPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">You don't have permission to edit this post</p>
+          <p className="text-red-600 mb-4">You do not have permission to edit this post</p>
           <Link href={`/post/${post.slug}`}>
             <Button>Back to Post</Button>
           </Link>

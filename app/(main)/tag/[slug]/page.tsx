@@ -96,7 +96,7 @@ export default function TagPage() {
             <CardContent className="pt-6 text-center py-12">
               <Tag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No posts found</h3>
-              <p className="text-gray-600 mb-6">No posts have been tagged with "{tagSlug}" yet.</p>
+              <p className="text-gray-600 mb-6">No posts have been tagged with &quot;{tagSlug}&quot; yet.</p>
               <Link href="/">
                 <Button>Browse All Posts</Button>
               </Link>

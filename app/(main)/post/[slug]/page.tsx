@@ -1,42 +1,30 @@
-// app/(main)/post/[slug]/page.tsx
-
-// 'use client' tells Next.js this component runs in the browser (needs hooks like useState)
-'use client';
-
-// Import React hooks
-import { useEffect, useState } from 'react';
-
-// Import Next.js components for navigation and links
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-
+"use client";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 // Import our custom hook to fetch post by slug (URL-friendly ID)
-import { usePostBySlug } from '@/lib/hooks/usePosts';
-
-// Import auth hook to check if user is logged in
-import { useAuth } from '@/lib/context/AuthContext';
-
+import { usePostBySlug } from "@/lib/hooks/usePosts";
+import { useAuth } from "@/lib/context/AuthContext";
 // Import service functions
-import { incrementViewCount } from '@/lib/services/postService';
-import { getUserById } from '@/lib/services/userService';
-
+import { incrementViewCount } from "@/lib/services/postService";
+import { getUserById } from "@/lib/services/userService";
 // Import UI components from shadcn
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar } from '@/components/ui/avatar';
-
-// Import icons from lucide-react
-import { ArrowLeft, Calendar, Clock, Eye, Heart, MessageSquare, User } from 'lucide-react';
-
-// Import date formatting library
-import { format } from 'date-fns';
-
-// Import comment components
-import CommentForm from '@/components/comment/commentForm';
-import CommentList from '@/components/comment/CommentList';
-
-// Import like button component
-import LikeButton from '@/components/post/LikeButton';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Eye,
+  Heart,
+  MessageSquare,
+  User,
+} from "lucide-react";
+import { format } from "date-fns";
+import CommentForm from "@/components/comment/commentForm";
+import CommentList from "@/components/comment/CommentList";
+import LikeButton from "@/components/post/LikeButton";
 
 // This is the main component for viewing a single post
 export default function SinglePostPage() {
@@ -56,7 +44,7 @@ export default function SinglePostPage() {
       if (post?.authorId) {
         const authorData = await getUserById(post.authorId);
         setAuthor(authorData);
-        console.log('Author loaded:', authorData);
+        console.log("Author loaded:", authorData);
       }
     };
     fetchAuthor();
@@ -87,7 +75,9 @@ export default function SinglePostPage() {
       <div className="min-h-screen flex items-center justify-center">
         <Card className="max-w-md">
           <CardContent className="pt-6">
-            <p className="text-red-600 text-center">Failed to load post. Please try again.</p>
+            <p className="text-red-600 text-center">
+              Failed to load post. Please try again.
+            </p>
             <div className="mt-4 text-center">
               <Link href="/">
                 <Button>Back to Home</Button>
@@ -120,10 +110,12 @@ export default function SinglePostPage() {
   // Format the published date
   const publishedDate = post.publishedAt
     ? format(
-        post.publishedAt instanceof Date ? post.publishedAt : post.publishedAt.toDate(),
-        'MMMM dd, yyyy'
+        post.publishedAt instanceof Date
+          ? post.publishedAt
+          : post.publishedAt.toDate(),
+        "MMMM dd, yyyy"
       )
-    : 'Draft';
+    : "Draft";
 
   // Main render - show the full post
   return (
@@ -133,7 +125,10 @@ export default function SinglePostPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Back button */}
-            <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+            >
               <ArrowLeft className="w-5 h-5" />
               <span>Back</span>
             </Link>
@@ -141,10 +136,14 @@ export default function SinglePostPage() {
             {/* User info or Login button */}
             <div className="flex items-center gap-4">
               {user ? (
-                <span className="text-sm text-gray-700">{user.displayName}</span>
+                <span className="text-sm text-gray-700">
+                  {user.displayName}
+                </span>
               ) : (
                 <Link href="/login">
-                  <Button size="sm" variant="outline">Login</Button>
+                  <Button size="sm" variant="outline">
+                    Login
+                  </Button>
                 </Link>
               )}
             </div>
@@ -165,26 +164,31 @@ export default function SinglePostPage() {
               />
             </div>
           )}
-         {/* Author Section - PROMINENT */}
-            {author && (
-              <div className="flex items-center gap-3 py-4 mb-6 border-y">
-                <Link href={`/profile/${author.username}`} className="flex items-center gap-3 hover:opacity-80">
-                  <Avatar className="w-12 h-12">
-                    {author.photoURL ? (
-                      <img src={author.photoURL} alt={author.displayName} />
-                    ) : (
-                      <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white text-xl font-semibold">
-                        {author.displayName?.[0]?.toUpperCase() || 'A'}
-                      </div>
-                    )}
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-gray-900">{author.displayName}</p>
-                    <p className="text-sm text-gray-600">@{author.username}</p>
-                  </div>
-                </Link>
-              </div>
-            )}
+          {/* Author Section - PROMINENT */}
+          {author && (
+            <div className="flex items-center gap-3 py-4 mb-6 border-y">
+              <Link
+                href={`/profile/${author.username}`}
+                className="flex items-center gap-3 hover:opacity-80"
+              >
+                <Avatar className="w-12 h-12">
+                  {author.photoURL ? (
+                    <img src={author.photoURL} alt={author.displayName} />
+                  ) : (
+                    <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white text-xl font-semibold">
+                      {author.displayName?.[0]?.toUpperCase() || "A"}
+                    </div>
+                  )}
+                </Avatar>
+                <div>
+                  <p className="font-semibold text-gray-900">
+                    {author.displayName}
+                  </p>
+                  <p className="text-sm text-gray-600">@{author.username}</p>
+                </div>
+              </Link>
+            </div>
+          )}
           {/* Post Content */}
           <div className="p-8">
             {/* Tags */}
@@ -209,8 +213,6 @@ export default function SinglePostPage() {
             {post.excerpt && (
               <p className="text-xl text-gray-600 mb-6">{post.excerpt}</p>
             )}
-
-           
 
             {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 pb-6 mb-6 border-b">
@@ -254,7 +256,10 @@ export default function SinglePostPage() {
             {/* Like Button Section */}
             <div className="mt-8 pt-6 border-t">
               <div className="flex items-center justify-center">
-                <LikeButton postId={post.id} initialLikeCount={post.likesCount || 0} />
+                <LikeButton
+                  postId={post.id}
+                  initialLikeCount={post.likesCount || 0}
+                />
               </div>
             </div>
           </div>
@@ -267,21 +272,18 @@ export default function SinglePostPage() {
               <h2 className="text-2xl font-bold mb-6">
                 Comments ({post.commentsCount || 0})
               </h2>
-              
+
               {/* Comment Form */}
-              <CommentForm 
-                postId={post.id} 
+              <CommentForm
+                postId={post.id}
                 onCommentAdded={() => {
-                  window.location.reload();
-                }} 
+                  router.refresh(); 
+                }}
               />
-              
+
               {/* Comments List */}
               <div className="mt-8">
-                <CommentList 
-                  postId={post.id} 
-                  onCommentAdded={() => {}} 
-                />
+                <CommentList postId={post.id} onCommentAdded={() => {}} />
               </div>
             </CardContent>
           </Card>

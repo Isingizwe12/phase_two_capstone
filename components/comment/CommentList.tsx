@@ -1,33 +1,25 @@
-// components/comment/CommentList.tsx
-'use client';
+"use client";
 
-// React hooks
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/context/AuthContext";
+import {
+  getCommentsByPost,
+  deleteComment,
+  getUserData,
+} from "@/lib/services/commentService";
+import { Comment } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
+import { Trash2, Loader2 } from "lucide-react";
+import { User } from "firebase/auth";
 
-// Auth context to get current user
-import { useAuth } from '@/lib/context/AuthContext';
-
-// Comment service functions
-import { getCommentsByPost, deleteComment, getUserData } from '@/lib/services/commentService';
-
-// TypeScript types
-import { Comment } from '@/types';
-
-// UI components
-import { Button } from '@/components/ui/button';
-import { Avatar } from '@/components/ui/avatar';
-
-// Icons
-import { Trash2, Loader2 } from 'lucide-react';
-
-// Date formatting
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from "date-fns";
 
 /**
  * Props for CommentList component
  */
 interface CommentListProps {
-  postId: string;        // Which post's comments to display
+  postId: string; // Which post's comments to display
   onCommentAdded: () => void; // Callback to refresh after new comment
 }
 
@@ -43,7 +35,10 @@ interface CommentWithAuthor extends Comment {
  * CommentList Component
  * Displays all comments for a post
  */
-export default function CommentList({ postId, onCommentAdded }: CommentListProps) {
+export default function CommentList({
+  postId,
+  onCommentAdded,
+}: CommentListProps) {
   // Get current logged-in user
   const { user } = useAuth();
 
@@ -71,15 +66,19 @@ export default function CommentList({ postId, onCommentAdded }: CommentListProps
 
           return {
             ...comment,
-            authorName: authorData?.displayName || 'Anonymous',
-            authorPhoto: authorData?.photoURL || '',
+            authorName:
+              (authorData as User | null | undefined)?.displayName ||
+              "Anonymous",
+            authorPhoto:
+              (authorData as User | null | undefined)?.photoURL ||
+              "/default-avatar.png",
           };
         })
       );
 
       setComments(commentsWithAuthors);
     } catch (error) {
-      console.error('Error loading comments:', error);
+      console.error("Error loading comments:", error);
     } finally {
       setLoading(false);
     }
@@ -99,21 +98,21 @@ export default function CommentList({ postId, onCommentAdded }: CommentListProps
    */
   const handleDelete = async (commentId: string) => {
     // Confirm before deleting
-    if (!confirm('Delete this comment?')) {
+    if (!confirm("Delete this comment?")) {
       return;
     }
 
     try {
       setDeletingId(commentId);
-      
+
       // Delete from Firestore
       await deleteComment(commentId, postId);
-      
+
       // Refresh the comments list
       await fetchComments();
     } catch (error) {
-      console.error('Error deleting comment:', error);
-      alert('Failed to delete comment');
+      console.error("Error deleting comment:", error);
+      alert("Failed to delete comment");
     } finally {
       setDeletingId(null);
     }
@@ -128,7 +127,7 @@ export default function CommentList({ postId, onCommentAdded }: CommentListProps
       const date = timestamp instanceof Date ? timestamp : timestamp.toDate();
       return formatDistanceToNow(date, { addSuffix: true });
     } catch {
-      return 'Just now';
+      return "Just now";
     }
   };
 
@@ -165,7 +164,7 @@ export default function CommentList({ postId, onCommentAdded }: CommentListProps
                 <img src={comment.authorPhoto} alt={comment.authorName} />
               ) : (
                 <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                  {comment.authorName?.[0]?.toUpperCase() || 'A'}
+                  {comment.authorName?.[0]?.toUpperCase() || "A"}
                 </div>
               )}
             </Avatar>

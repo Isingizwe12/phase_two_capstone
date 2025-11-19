@@ -27,52 +27,29 @@ export default function WritePage() {
   const [error, setError] = useState('');
 
   // Jodit editor config 
-  const config = useMemo(
-    () => ({
-      readonly: false,
-      placeholder: 'Start writing your story...',
-      minHeight: 400,
-      toolbar: true,
-      spellcheck: true,
-      language: 'en',
-      toolbarButtonSize: 'medium',
-      toolbarAdaptive: false,
-      showCharsCounter: true,
-      showWordsCounter: true,
-      showXPathInStatusbar: false,
-      buttons: [
-        'bold',
-        'italic',
-        'underline',
-        '|',
-        'ul',
-        'ol',
-        '|',
-        'font',
-        'fontsize',
-        '|',
-        'paragraph',
-        '|',
-        'image',
-        'link',
-        '|',
-        'align',
-        '|',
-        'undo',
-        'redo',
-        '|',
-        'hr',
-        'table',
-        'source',
-      ],
-      uploader: {
-        insertImageAsBase64URI: true, // For now, use base64 (we'll add Cloudinary later)
-      },
-      removeButtons: ['brush', 'file'],
-      disablePlugins: 'paste',
-    }),
-    []
-  );
+ const config = useMemo(
+  () => ({
+    readonly: false,
+    placeholder: 'Start writing your story...',
+    height: 500,
+    toolbar: true,
+    spellcheck: true,
+    language: 'en',
+    toolbarButtonSize: 'middle' as const, // ← explicit "as const" helps TS
+    toolbarAdaptive: false,
+    showCharsCounter: true,
+    showWordsCounter: true,
+    showXPathInStatusbar: false,
+    buttons: 'bold,italic,underline,|,ul,ol,|,font,fontsize,paragraph,|,image,link,|,align,undo,redo,|,hr,table,source',
+    removeButtons: ['brush', 'file'],
+    disablePlugins: ['paste'],
+    uploader: {
+      insertImageAsBase64URI: true,
+    },
+    // These are the only options that still exist and are type-safe in Jodit 4+
+  }),
+  []
+);
 
   // Redirect if not logged in - MOVED AFTER ALL HOOKS
   useEffect(() => {
