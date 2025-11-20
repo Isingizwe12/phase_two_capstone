@@ -11,19 +11,19 @@ import {
   serverTimestamp,
   updateDoc,
   increment,
-  getDoc,
 } from 'firebase/firestore';
 
 import { db } from '@/lib/firebase/config';
 
-/**
- * Check if user is following another user
- */
 export async function checkIfFollowing(
   followerId: string,
   followingId: string
 ): Promise<string | null> {
   try {
+    console.log('=== CHECK IF FOLLOWING ===');
+    console.log('Follower ID:', followerId);
+    console.log('Following ID:', followingId);
+
     const q = query(
       collection(db, 'follows'),
       where('followerId', '==', followerId),
@@ -33,112 +33,136 @@ export async function checkIfFollowing(
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
+      console.log('✅ Already following, ID:', querySnapshot.docs[0].id);
       return querySnapshot.docs[0].id;
     }
 
+    console.log('❌ Not following yet');
     return null;
   } catch (error) {
-    console.error('Error checking follow status:', error);
+    console.error('❌ Error checking follow status:', error);
     throw error;
   }
 }
 
-/**
- * Follow a user
- */
 export async function followUser(
   followerId: string,
   followingId: string
 ): Promise<string> {
   try {
-    // Check if already following
+    console.log('=== FOLLOW USER ===');
+    console.log('Follower ID:', followerId);
+    console.log('Following ID:', followingId);
+
     const existingFollow = await checkIfFollowing(followerId, followingId);
     if (existingFollow) {
+      console.log('Already following, returning existing');
       return existingFollow;
     }
 
-    // Create follow document
     const followData = {
-      followerId,
-      followingId,
+      followerId: followerId,
+      followingId: followingId,
       createdAt: serverTimestamp(),
     };
 
-    const docRef = await addDoc(collection(db, 'follows'), followData);
+    console.log('Creating follow document with data:', followData);
 
-    // Update follower count on the followed user
+    const docRef = await addDoc(collection(db, 'follows'), followData);
+    console.log('✅ Follow document created:', docRef.id);
+
+    // Update follower count
+    console.log('Updating follower count...');
     const followingUserRef = doc(db, 'users', followingId);
     await updateDoc(followingUserRef, {
       followersCount: increment(1),
     });
+    console.log('✅ Follower count updated');
 
-    // Update following count on the follower
+    // Update following count
+    console.log('Updating following count...');
     const followerUserRef = doc(db, 'users', followerId);
     await updateDoc(followerUserRef, {
       followingCount: increment(1),
     });
+    console.log('✅ Following count updated');
 
     return docRef.id;
-  } catch (error) {
-    console.error('Error following user:', error);
+  } catch (error: any) {
+    console.error('❌ ERROR FOLLOWING USER');
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    console.error('Full error:', error);
     throw error;
   }
 }
 
-/**
- * Unfollow a user
- */
 export async function unfollowUser(
   followerId: string,
   followingId: string
 ): Promise<void> {
   try {
+    console.log('=== UNFOLLOW USER ===');
+    console.log('Follower ID:', followerId);
+    console.log('Following ID:', followingId);
+
     const followId = await checkIfFollowing(followerId, followingId);
 
     if (!followId) {
       throw new Error('Follow relationship not found');
     }
 
-    // Delete follow document
+    console.log('Deleting follow document:', followId);
     const followRef = doc(db, 'follows', followId);
     await deleteDoc(followRef);
+    console.log('✅ Follow document deleted');
 
     // Decrement follower count
+    console.log('Decrementing follower count...');
     const followingUserRef = doc(db, 'users', followingId);
     await updateDoc(followingUserRef, {
       followersCount: increment(-1),
     });
+    console.log('✅ Follower count decremented');
 
     // Decrement following count
+    console.log('Decrementing following count...');
     const followerUserRef = doc(db, 'users', followerId);
     await updateDoc(followerUserRef, {
       followingCount: increment(-1),
     });
-  } catch (error) {
-    console.error('Error unfollowing user:', error);
+    console.log('✅ Following count decremented');
+  } catch (error: any) {
+    console.error('❌ ERROR UNFOLLOWING USER');
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    console.error('Full error:', error);
     throw error;
   }
 }
 
-/**
- * Toggle follow (follow if not following, unfollow if following)
- */
 export async function toggleFollow(
   followerId: string,
   followingId: string
 ): Promise<boolean> {
   try {
+    console.log('=== TOGGLE FOLLOW ===');
+    console.log('Follower ID:', followerId);
+    console.log('Following ID:', followingId);
+
     const existingFollow = await checkIfFollowing(followerId, followingId);
 
     if (existingFollow) {
+      console.log('Exists, unfollowing...');
       await unfollowUser(followerId, followingId);
-      return false; // Now unfollowed
+      return false;
     } else {
+      console.log('Does not exist, following...');
       await followUser(followerId, followingId);
-      return true; // Now following
+      return true;
     }
   } catch (error) {
-    console.error('Error toggling follow:', error);
+    console.error('❌ Error toggling follow:', error);
     throw error;
   }
 }

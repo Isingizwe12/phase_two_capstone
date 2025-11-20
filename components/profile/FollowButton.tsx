@@ -59,24 +59,25 @@ export default function FollowButton({
     setIsFollowing(!isFollowing);
     setFollowersCount(isFollowing ? followersCount - 1 : followersCount + 1);
 
-    try {
-      const nowFollowing = await toggleFollow(user.uid, userId);
-      
-      // Notify parent component
-      if (onFollowChange) {
-        onFollowChange(nowFollowing);
-      }
+try {
+  const newFollowingState = await toggleFollow(user.uid, userId);
 
-      console.log('Follow toggled successfully');
-    } catch (error: any) {
-      console.error('Error toggling follow:', error);
-      
-      // Rollback
-      setIsFollowing(previousFollowState);
-      setFollowersCount(previousCount);
+  // Server is the source of truth — always trust it
+  setIsFollowing(newFollowingState);
+  setFollowersCount(prev => newFollowingState ? prev + 1 : prev - 1);
 
-      alert(`Failed to ${isFollowing ? 'unfollow' : 'follow'}: ${error.message}`);
-    } finally {
+  onFollowChange?.(newFollowingState);
+
+  console.log('Follow toggled successfully:', newFollowingState);
+} catch (error: any) {
+  // Rollback on any error
+  setIsFollowing(previousFollowState);
+  setFollowersCount(previousCount);
+
+  console.error('Error toggling follow:', error);
+  alert(`Failed to ${!previousFollowState ? 'follow' : 'unfollow'}: ${error.message}`);
+}
+ finally {
       setLoading(false);
     }
   };
