@@ -1,9 +1,5 @@
 "use client";
-
-// React hooks
 import { useEffect, useState } from "react";
-
-// Next.js hooks
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -36,6 +32,7 @@ import {
 
 // Date formatting
 import { format } from "date-fns";
+import FollowButton from "@/components/profile/FollowButton";
 
 /**
  * Profile Page Component
@@ -223,13 +220,21 @@ export default function ProfilePage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-6">
+              <div className="mt-6 flex gap-3">
                 {isOwnProfile ? (
-                  <Link href="/profile/edit">
-                    <Button>Edit Profile</Button>
-                  </Link>
+                  <>
+                    <Link href="/profile/edit">
+                      <Button>Edit Profile</Button>
+                    </Link>
+                    <Link href="/dashboard">
+                      <Button variant="outline">Dashboard</Button>
+                    </Link>
+                  </>
                 ) : (
-                  <Button>Follow</Button>
+                  <FollowButton
+                    userId={profileUser.uid}
+                    initialFollowersCount={profileUser.followersCount || 0}
+                  />
                 )}
               </div>
             </div>
